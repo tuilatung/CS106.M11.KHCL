@@ -177,11 +177,11 @@ def breadthFirstSearch(gameState):
     beginBox = PosOfBoxes(gameState)
     beginPlayer = PosOfPlayer(gameState)
 
-    startState = (beginPlayer, beginBox) # e.g. ((2, 2), ((2, 3), (3, 4), (4, 4), (6, 1), (6, 4), (6, 5)))
-    frontier = collections.deque([[startState]]) # store states
-    actions = collections.deque([[0]]) # store actions
-    exploredSet = set()
-    temp = []
+    startState = (beginPlayer, beginBox) # trạng thái bản đồ, lưu lại các vị trí hộp và vị trí người chơi
+    frontier = collections.deque([[startState]]) # tạo hàng đợi frontier, điểm khởi tạo ban đầu là trạng thái của trò chơi
+    exploredSet = set() # tập chứa các điểm đã đi qua (đã được thêm vào đường đi rồi)
+    actions = collections.deque([[0]]) # lưu lại các hành động (đường đi), trạng thái ban đầu là 0 (node đầu tiên)
+    temp = [] # biến tạm đùng để lưu tạm kết quả để trả về 
     ### Implement breadthFirstSearch here
 
     """ Thuật toán BFS phần lớn y hệt như DFS nhưng chỉ khác nhau cách mở node tiếp theo
@@ -233,11 +233,11 @@ def uniformCostSearch(gameState):
             exploredSet.add(node[-1])  # đây là node chưa mở, nên thêm nó vào tập các node đã đi qua, và xử lý trong bước kế tiếp
             Cost = cost(node_action[1:]) # tính chi phí từ vị trí ban đầu đến node hiện tại
             for action in legalActions(node[-1][0], node[-1][1]):  # duyệt các hành động được cho là hợp lệ ví dụ (UP, DOWN, LEFT, BOTTOM)
-                newPosPlayer, newPosBox = updateState(node[-1][0], node[-1][1], action)
-                if isFailed(newPosBox):
-                    continue
-                frontier.push(node + [(newPosPlayer, newPosBox)],Cost)
-                actions.push(node_action + [action[-1]],Cost)
+                newPosPlayer, newPosBox = updateState(node[-1][0], node[-1][1], action) # cập nhật trạng thái game
+                if isFailed(newPosBox): # nếu trạng thái mới của hộp sai, bị fail 
+                    continue # bỏ qua và xét hành động tiếp theo, ngược lại thực hiện tiếp lệnh dưới
+                frontier.push(node + [(newPosPlayer, newPosBox)],Cost) # thêm vị trí mới vào frontier với chi phí tương ứng
+                actions.push(node_action + [action[-1]],Cost) # thêm hành động đã đi qua vào actions với chi phí tương ứng
     return temp
 
 """Read command"""
