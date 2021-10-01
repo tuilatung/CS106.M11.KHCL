@@ -1,0 +1,2 @@
+* To Run, open terminal and tpye: `python3 Sokoban.py` or `python Sokoban.py`
+* To change algorithms to solve automatically: **comment/uncomment** các dòng lệnh tương ứng trong hàm auto_move() trong file `game.py`
