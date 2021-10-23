@@ -57,7 +57,7 @@ def remove_files():
     # for remove files
     for item in directories:
         for sub_item in sub_folders:
-            tmp = os.path.join(dir_dataset, item, sub_item, "R01000");
+            tmp = os.path.join(dir_dataset, item, sub_item, "R01000")
             for file in os.listdir(tmp):
                 if file != "s000.kp": # except s000.kp file
                     remove(os.path.join(tmp, file))
