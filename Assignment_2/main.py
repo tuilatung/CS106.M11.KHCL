@@ -52,8 +52,8 @@ def main():
         pywrapknapsack_solver.KnapsackSolver.
         KNAPSACK_MULTIDIMENSION_BRANCH_AND_BOUND_SOLVER, 'KnapsackExample')
 
-    TIME_LIMIT = 180 # set limited time to 3 mins for each test cases
-    file_out = open('result.txt', 'a')
+    TIME_LIMIT = 120 # set limited time to 3 mins for each test cases
+    file_out = open('result.csv', 'a')
 
     for item in directories:
         for sub_item in sub_folders:
@@ -72,12 +72,13 @@ def main():
 
                 total_weight = 0
                 isSuccess = True
+                test_case_name = "{}_{}".format(item, sub_item)
+                print("Solving " + test_case_name + "====================")
                 print('Total value =', computed_value)
                 for i in range(len(values)):
                     if solver.BestSolutionContains(i):
                         total_weight += weights[0][i]
                 print('Total weight:', total_weight)
-                test_case_name = "{}_{}".format(item, sub_item)
                 
                 if time_cost > TIME_LIMIT:
                     print(test_case_name + "Time limited!")
