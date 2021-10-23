@@ -80,7 +80,7 @@ def main():
                 test_case_name = "{}_{}".format(item, sub_item)
                 
                 if time_cost > TIME_LIMIT:
-                    print("Time limited!")
+                    print(test_case_name + "Time limited!")
                     isSuccess = False
                     content = test_case_name + "," + str(0) + "," + str(0) + "," + str(isSuccess)
                 else:
