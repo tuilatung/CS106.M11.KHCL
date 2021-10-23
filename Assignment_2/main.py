@@ -53,7 +53,7 @@ def main():
         KNAPSACK_MULTIDIMENSION_BRANCH_AND_BOUND_SOLVER, 'KnapsackExample')
 
     TIME_LIMIT = 180 # set limited time to 3 mins for each test cases
-    file_out = open('result.csv', 'a')
+    file_out = open('result.txt', 'a')
 
     for item in directories:
         for sub_item in sub_folders:
@@ -86,8 +86,7 @@ def main():
                 else:
                     content = test_case_name + "," + str(computed_value) + "," + str(total_weight) + "," + str(isSuccess)
                 file_out.write(content + '\n')
-                break
-        break       
+
     file_out.close()
     
 
