@@ -164,7 +164,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         if depth is self.depth * gameState.getNumAgents() \
                 or gameState.isLose() or gameState.isWin():
             return self.evaluationFunction(gameState)
-        if agentIndex is 0:
+        if agentIndex == 0:
             return self.maxval(gameState, agentIndex, depth)[1]
         else:
             return self.minval(gameState, agentIndex, depth)[1]
@@ -282,7 +282,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
     def expectimax(self, gameState, action, depth, agentIndex):
 
-        if depth is 0 or gameState.isLose() or gameState.isWin():
+        if depth == 0 or gameState.isLose() or gameState.isWin():
             return (action, self.evaluationFunction(gameState))
 
         # if pacman (max agent) - return max successor value
@@ -333,23 +333,37 @@ def betterEvaluationFunction(currentGameState):
     newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
     score = currentGameState.getScore()
 
+
+    """ Khởi tạo các giá trị khoảng cách gần nhất từ Pacman tới:
+            - Chấm thức ăn
+            - Con ma "chiến"
+            - Con ma "sợ hãi"
+    """
+    closest_food = float('inf')
+    closest_scared_ghost = float('inf')
+    closest_enemy_ghost = float('inf')
+
+
+    """ Sử dụng đặc trưng là số chấm thức ăn còn lại và số viên capsulu còn lại """
     food_left = len(newFood.asList())
     capsule_left = len(newCapsules)
-    scared_ghosts = list()
+
+    """ Sử dụng đặc trưng là những con ma chiến và con ma sợ hãi, khởi tạo list để lưu vị trí 2 con ma đó"""
     enemy_ghosts = list()
+    scared_ghosts = list()
     enemy_ghost_pos = list()
     scared_ghost_pos = list()
-    score = currentGameState.getScore()
 
-    closest_food = float('inf')
-    closest_enemy_ghost = float('inf')
-    closest_scared_ghost = float('inf')
 
+    """ Sử dụng đặc trưng điểm của currentState cho hàm đánh giá"""
+
+    """ Tính khoảng cách từ Pacman tới tất cả các vị trí thức ăn. Ưu tiên cho Pacman ăn chấm thức ăn gần nhất"""
     food_distances = [manhattanDistance(newPos, food_position) for food_position in newFood]
     if len(food_distances) != 0:
         closest_food = min(food_distances)
         score -= 1.0 * closest_food
 
+    """ Lấy thông tin, vị trí các con ma trong trạng thái game hiện tại """
     for ghost in newGhostStates:
         if ghost.scaredTimer != 0:
             enemy_ghosts.append(ghost)
@@ -359,21 +373,33 @@ def betterEvaluationFunction(currentGameState):
     for enemy_ghost in enemy_ghosts:
         enemy_ghost_pos.append(enemy_ghost.getPosition())
 
+    for scared_ghost in scared_ghosts:
+        scared_ghost_pos.append(scared_ghost.getPosition())
+
+    """ Với con ma chiến (hung dữ) thì chúng ta không nên để Pacman lại gần, mục tiêu cho Pacman đi xa con ma hung dữ đó
+        Xác định khoảng cách gần nhất từ Pacman tới con ma hưng tợn đó, sau đó trừ một lượng nghịch đảo khoảng cách.
+        Ta chọn hệ số trừng phạt là 2.0. Vì chúng ta cần minimize giá trị ước lượng nên cần tăng khoảng cách từ Pacman 
+        tới con ma hung hăng đó
+    """
     if len(enemy_ghost_pos) != 0:
         distance_from_enemy_ghost = [manhattanDistance(newPos, enemy_ghost_position) for enemy_ghost_position in enemy_ghost_pos]
         closest_enemy_ghost = min(distance_from_enemy_ghost)
         score -= 2.0 * (1 / closest_enemy_ghost)
 
-    for scared_ghost in scared_ghosts:
-        scared_ghost_pos.append(scared_ghost.getPosition())
-
+    """ Với con ma hiền lành, ngây thơ thì chúng ta nên để Pacman lại gần để ăn nó, sẽ đóng góp một lượng điểm lớn,.
+        Ta chọn hệ số trừng phạt là 10.0 (ý nghĩa là không khuyến khích Pacman đi xa con mà, thay vào đó đi gần lại sẽ có cơ hội ăn điểm)
+        Trái với trường hợp trên, vì đi lại gần con ma hiền lành đó sẽ có cơ hội ăn điểm, nên phải giảm khoảng cách tới con ma hiền lành đó
+    """
     if len(scared_ghost_pos) != 0:
         distance_from_scared_ghost = [manhattanDistance(newPos, scared_ghost_position) for scared_ghost_position in scared_ghost_pos]
         closest_scared_ghost = min(distance_from_scared_ghost)
         score -= 4.0 * closest_scared_ghost
 
+
+    """ Cho hệ số vào trước đặc trưng capsule còn lại và thức ăn còn lại lớn, là 20 và 5. Ý nghĩa mong muốn Pacman phải cố minimize
+    giá trị ước lượng, nên khuyến khích nó nên ăn nhiều capsule và chấm thức ăn nhất có thể"""
     score -= 20.0 * capsule_left
-    score -= 5.0 * food_left
+    score -= 10.0 * food_left
     return score
 
 # Abbreviation
